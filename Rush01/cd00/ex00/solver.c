@@ -27,9 +27,34 @@ int	count_visible(int *line)
 	return (count);
 }
 
-int	check_views(int grid[4][4], int *hints)
+int	check_rows(int grid[4][4], int *hints)
 {
 	int	row[4];
+	int	i, j, visible;
+
+	i = 0;
+	while (i < 4)
+	{
+		j = 0;
+		while (j < 4)
+		{
+			row[j] = grid[i][j];
+			j++;
+		}
+		visible = count_visible(row);
+		if (hints[8 + i] && visible != hints[8 + i])
+			return (0);
+		int rev_row[4] = {row[3], row[2], row[1], row[0]};
+		visible = count_visible(rev_row);
+		if (hints[12 + i] && visible != hints[12 + i])
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int	check_cols(int grid[4][4], int *hints)
+{
 	int	col[4];
 	int	i, j, visible;
 
@@ -40,29 +65,26 @@ int	check_views(int grid[4][4], int *hints)
 		while (j < 4)
 		{
 			col[j] = grid[j][i];
-			row[j] = grid[i][j];
 			j++;
 		}
-		// top hints
 		visible = count_visible(col);
 		if (hints[i] && visible != hints[i])
 			return (0);
-		// bottom hints
 		int rev_col[4] = {col[3], col[2], col[1], col[0]};
 		visible = count_visible(rev_col);
 		if (hints[4 + i] && visible != hints[4 + i])
 			return (0);
-		// left hints
-		visible = count_visible(row);
-		if (hints[8 + i] && visible != hints[8 + i])
-			return (0);
-		// right hints
-		int rev_row[4] = {row[3], row[2], row[1], row[0]};
-		visible = count_visible(rev_row);
-		if (hints[12 + i] && visible != hints[12 + i])
-			return (0);
 		i++;
 	}
+	return (1);
+}
+
+int	check_views(int grid[4][4], int *hints)
+{
+	if (!check_rows(grid, hints))
+		return (0);
+	if (!check_cols(grid, hints))
+		return (0);
 	return (1);
 }
 
